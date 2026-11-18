@@ -1,0 +1,86 @@
+
+
+
+
+
+use shopDB
+db.products.updateOne({name : "Keyboard"} 
+                   {$set(price : 1400} )
+db.products.updateOne({name : "Wireless Mouse" }
+                 {$inc(stock : 25})
+db.products.updateMany(
+  {},
+  { $unset: { oldcode: "" } }
+)
+db.products.findOneAndReplace(
+  { _id: 3 },
+  {
+    name: "USB-C Cable",
+    category: "Accessories",
+    price: 350,
+    stock: 100,
+    discontinued: false
+  },
+  { returnDocument: "after" }
+)
+db.products.deleteOne({ name: "Old Floppy Drive" })
+db.products.aggregate([
+  
+  {
+    $match: {
+      price: { $gte: 500 }
+    }
+  },
+  
+  {
+    $group: {
+      _id: "$category",
+      totalStock: { $sum: "$stock" },
+      averagePrice: { $avg: "$price" }
+    }
+  },
+ 
+  {
+    $sort: {
+      totalStock: -1
+    }
+  }
+]);
+
+
+
+
+QUESTION 2
+
+db.employees.find({ dept: "IT" }).explain("executionStats")
+
+db.employees.createIndex({ dept: 1 })
+
+db.employees.find({ dept: "IT" }).explain("executionStats")
+db.employees.createIndex({ dept: 1, salary: -1 })
+db.employees.find({ dept: "IT" }).sort({ salary: -1 })
+db.employees.find({ dept: "IT" }).sort({ salary: -1 }).explain("executionStats")
+db.employees.createIndex({ skills: 1 })
+
+db.employees.find({ skills: "mongodb" })
+db.employees.find({ skills: { $regex: /^mongodb$/i } })
+db.yourCollection.hideIndex("skills_1")
+db.yourCollection.find({ skills: "MongoDB" }).explain("executionStats")
+db.yourCollection.unhideIndex("skills_1")
+
+db.users.createIndex({ city: 1 }, { unique: true });
+
+
+db.users.createIndex({ email: 1 }, { unique: true });
+{
+  "listIndexes": "companyDB.employees"
+}
+db.runCommand({ listIndexes: "companyDB.employees" })
+
+
+
+
+
+
+
+
